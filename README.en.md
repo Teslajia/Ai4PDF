@@ -9,7 +9,7 @@
 [![Release](https://img.shields.io/github/v/release/Teslajia/Ai4PDF?color=256b59)](https://github.com/Teslajia/Ai4PDF/releases/latest)
 [![License](https://img.shields.io/badge/License-AGPL--3.0-blue)](LICENSE)
 
-[简体中文](README.md) · English
+[简体中文](README.md) · [繁體中文](README.zh-TW.md) · English · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 [**Download for Windows**](https://github.com/Teslajia/Ai4PDF/releases/latest) · [Report an issue](https://github.com/Teslajia/Ai4PDF/issues)
 
@@ -28,6 +28,7 @@ The interface runs in your browser, served by a local application. No Ai4PDF acc
 - **Original PDFs:** preserve figures, equations and page layout, with selectable text, outline, search and saved reading position.
 - **Bilingual reading:** insert translations after original paragraphs; choose a page range, pause/resume, retry one paragraph, or collapse its translation.
 - **Annotations:** highlight, underline and comment on original or translated text; click to edit an annotation and drag the note window aside.
+- **Annotated PDF export:** export highlights, underlines and notes on the original text as native PDF annotations in a separate file, preserving the original PDF.
 - **Your AI:** configure endpoint, model ID, display name and reasoning effort. Ask about selected text, attach images and follow page references. Mathematics renders with KaTeX.
 - **Manual segmentation:** split/merge blocks, edit text sent for translation, or exclude figures and equations.
 - **Local library:** folders, tags, bulk actions, recycle bin and verified migration.
@@ -86,7 +87,7 @@ Ai4PDF uses **OpenAI-compatible Chat Completions**. Cloud, gateway and local ser
 | Startup logs | `%LOCALAPPDATA%\Ai4PDF\logs` |
 | API configuration and interface preferences | Current browser; keys stay in page memory unless explicitly remembered in localStorage |
 
-The service binds only to `127.0.0.1`. PDF rendering assets are local. Translation sends source paragraphs to your configured API; chat sends relevant document context, the question, recent conversation and attached images. Connection tests and model discovery also contact that provider. API keys are used for authentication but are not stored in the document library.
+The service binds only to `127.0.0.1`. PDF rendering assets are local. Translation sends source paragraphs to your configured API; chat sends relevant document context, the question, recent conversation and attached images. Connection tests and model discovery also contact that provider. API keys are used for authentication but are not stored in the document library. Update checks and installer downloads contact GitHub without sending documents or AI credentials.
 
 Back up the **entire library directory** after stopping the service. Migration copies and verifies files before switching, and retains the original directory as a backup.
 

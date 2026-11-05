@@ -12,7 +12,7 @@
 [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011%20x64-0078D4)](https://github.com/Teslajia/Ai4PDF/releases/latest)
 [![License](https://img.shields.io/badge/License-AGPL--3.0-blue)](LICENSE)
 
-简体中文 · [English](README.en.md)
+简体中文 · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 [**下载安装版**](https://github.com/Teslajia/Ai4PDF/releases/latest) · [使用指南](docs/USAGE.zh-CN.md) · [常见问题](#常见问题) · [反馈问题](https://github.com/Teslajia/Ai4PDF/issues)
 
@@ -35,6 +35,7 @@ PDF、批注、译文和对话保存在本机，无需注册 Ai4PDF 账号。阅
 | 📄 原文阅读 | 保留 PDF 文字、图片、公式和版面；选字复制、目录、搜索和阅读进度恢复 |
 | 🌐 双语对照 | 按段落插入译文，翻译全文或指定起止页；暂停续译、单段重译、折叠 / 展开 |
 | ✍️ 划线批注 | 原文和译文支持高亮、下划线、笔记；单击标记快速编辑，笔记窗口可拖动 |
+| 📤 批注 PDF 导出 | 将原文高亮、下划线和笔记导出为 PDF 原生批注，生成独立文件，保留原始 PDF |
 | 🤖 自定义 AI | API 地址、Key、模型 ID、显示名称和思考强度；图片附件、选区提问、公式显示和页码引用 |
 | 🧩 手动调整 | 自动分段不准时，可切分、合并、修正待译文字，或将指定块设为不翻译 |
 | 🗂️ 本地文档库 | 文件夹分类、标签、搜索、批量管理、回收站，以及复制校验后切换的文档库迁移 |
@@ -124,7 +125,7 @@ powershell -ExecutionPolicy Bypass -File setup.ps1
 
 设置里可查看实际目录，或迁移到另一个空文件夹。迁移会复制、校验后切换，原目录保留为备份。备份时请先退出服务，再复制整个文档库，勿只复制 PDF。
 
-**网络使用**：本地服务只监听 `127.0.0.1`，PDF 阅读资源不依赖远程 CDN。翻译向配置的 API 发送相应原文；问答发送文档上下文、问题、最近对话和所附图片。测试连接和获取模型列表也会访问配置的服务。API Key 不写入文档库，但服务商会收到用于鉴权的 Key。
+**网络使用**：本地服务只监听 `127.0.0.1`，PDF 阅读资源不依赖远程 CDN。翻译向配置的 API 发送相应原文；问答发送文档上下文、问题、最近对话和所附图片。测试连接和获取模型列表也会访问配置的服务。API Key 不写入文档库，但服务商会收到用于鉴权的 Key。检查更新和下载安装包会连接 GitHub，不发送文档或 AI 凭据。
 
 ## 常见问题
 

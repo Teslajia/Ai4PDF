@@ -17,7 +17,8 @@ sys.path.insert(0, str(ROOT))
 from version import VERSION
 
 SOURCE_FILES = (
-    '.gitignore', 'LICENSE', 'NOTICE', 'README.md', 'README.en.md', 'CONTRIBUTING.md',
+    '.gitignore', 'LICENSE', 'NOTICE', 'README.md', 'README.en.md',
+    'README.zh-TW.md', 'README.ja.md', 'README.ko.md', 'CONTRIBUTING.md',
     'CHANGELOG.md', 'RELEASE.md', 'app.py', 'desktop.py',
     'runtime_paths.py', 'version.py', 'updates.py', 'desktop_update.py', 'layout.py', 'library.py', 'manual_layout.py',
     'pdf_geometry.py', 'translation_policy.py', 'requirements.txt', 'requirements-desktop.txt',
