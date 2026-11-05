@@ -1,0 +1,15 @@
+Ai4PDF · PDF_AI助手
+Copyright (C) 2026 Teslajia and contributors
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License, version 3,
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See LICENSE.
+
+Third-party software retains its original copyright and license notices.
+The installed _internal/legal directory includes the application source,
+license text and THIRD_PARTY_NOTICES.md. Release assets also include the
+matching PyMuPDF / MuPDF source archive.

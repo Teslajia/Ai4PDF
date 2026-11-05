@@ -1,0 +1,17 @@
+.venv/
+.cache/
+.npm-cache/
+node_modules/
+data/
+tmp/
+__pycache__/
+.pytest_cache/
+library-location.json
+.build-venv/
+build/
+dist/
+release/
+pytest-cache-files-*/
+*.log
+.env
+.env.*

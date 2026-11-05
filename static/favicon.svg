@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Ai4PDF · PDF AI Assistant</title>
+  <rect width="64" height="64" rx="17" fill="#256b59"/>
+  <path d="M18 10h19l14 14v25a5 5 0 0 1-5 5H18a5 5 0 0 1-5-5V15a5 5 0 0 1 5-5Z" fill="#f8fcf7"/>
+  <path d="M37 10v10a4 4 0 0 0 4 4h10Z" fill="#a8d7b9"/>
+  <g fill="none" stroke="#256b59" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m21 42 8-16 8 16m-12.5-7h9M44 35v7"/>
+  </g>
+  <g fill="#256b59">
+    <circle cx="29" cy="26" r="2.7"/>
+    <circle cx="21" cy="42" r="2.7"/>
+    <circle cx="37" cy="42" r="2.7"/>
+    <circle cx="44" cy="29" r="2"/>
+  </g>
+</svg>
