@@ -6,6 +6,7 @@ import { ChatImages, appendMessageImages } from './chat-images.js';
 import { LayoutEditor } from './layout-editor.js';
 import { ModelPicker } from './model-picker.js';
 import { LibraryUI } from './library.js';
+import { UpdatesUI } from './updates.js';
 import { draggableDialog } from './draggable-dialog.js';
 import { AnnotationActions } from './annotation-actions.js';
 import { t, getLocale, setLocale, startI18n } from './i18n.js';
@@ -47,6 +48,7 @@ const libraryUI=new LibraryUI({api,notify:toast,busy:()=>chatBusy||translating||
   if(drawer==='library')await renderDrawer();
 }});
 const chatImages=new ChatImages({api,notify:toast,busy:()=>chatBusy,documentId:()=>doc?.id});
+const updatesUI=new UpdatesUI({api,busy:()=>chatBusy||translating||opening||libraryUI.pending||libraryUI.migrating,flush:async()=>{await autoSave;if($('#save-status').textContent===t('保存失败'))throw new Error(t('保存失败'));}});
 const translationParagraphs=()=>doc?.translationParagraphs || doc?.paragraphs || [];
 const layoutEditor=new LayoutEditor({api,notify:toast,documentId:()=>doc?.id,busy:()=>translating||opening,onSave:async(result,number,id)=>{
   if(doc?.id!==id)return;
@@ -710,6 +712,7 @@ function openSettings() {
   apiModelPicker.reset();
   $('#connection-result').textContent='';$('#api-key').type='password';$('#toggle-key').textContent='显示';$('#settings-dialog').showModal();
   libraryUI.loadStorage();
+  updatesUI.load();
 }
 function settingsValues(){return{...config,baseUrl:$('#api-url').value.trim().replace(/\/+$/,''),displayName:$('#api-display-name').value.trim(),model:$('#api-model').value.trim(),reasoningEffort:$('#api-reasoning').value,apiKey:$('#api-key').value.trim(),rememberKey:$('#remember-key').checked};}
 function requestConfig(value=config){return{baseUrl:value.baseUrl,model:value.model,reasoningEffort:value.reasoningEffort,apiKey:value.apiKey,uiLanguage:getLocale()};}

@@ -4,6 +4,7 @@ from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 
 root = Path(SPECPATH).parent
 datas = [(str(root / 'static'), 'static'), (str(root / 'build' / 'legal'), 'legal')]
+datas.append((str(root / 'packaging' / 'apply-update.ps1'), 'packaging'))
 for package, folders in {
     'pdfjs-dist': ['build', 'web', 'cmaps', 'standard_fonts', 'wasm'],
     'katex': ['dist'], 'marked': ['lib'], 'dompurify': ['dist'],

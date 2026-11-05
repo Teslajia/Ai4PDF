@@ -60,6 +60,8 @@ try {
     if ((Get-FileHash -LiteralPath $pointer).Hash -ne $pointerHash) { throw 'Upgrade overwrote library settings' }
     & (Join-Path $projectRoot '.build-venv/Scripts/python.exe') (Join-Path $PSScriptRoot 'check_installed_library.py') $executable $configRoot $personalData
     if ($LASTEXITCODE -ne 0) { throw 'Upgraded app lost the chosen library' }
+    & (Join-Path $projectRoot '.build-venv/Scripts/python.exe') (Join-Path $PSScriptRoot 'smoke_update_install.py') $executable $configRoot $personalData $Installer
+    if ($LASTEXITCODE -ne 0) { throw 'Update helper did not preserve the selected library or restart correctly' }
 } finally {
     if ($installed) {
         # Only execute the uninstaller belonging to this verified temporary installation.

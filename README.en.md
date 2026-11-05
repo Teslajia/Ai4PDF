@@ -44,13 +44,17 @@ Original regions have an overlaid PDF text layer for selection and copying. The 
 ### Windows 10 / 11, x64
 
 1. Open the [latest Release](https://github.com/Teslajia/Ai4PDF/releases/latest).
-2. Download and run `Ai4PDF-1.0.0-windows-x64-setup.exe`.
+2. Download and run `Ai4PDF-1.0.1-windows-x64-setup.exe`.
 3. Choose application and library folders. Select an empty folder or an existing Ai4PDF library.
 4. Start Ai4PDF. Your browser opens `http://127.0.0.1:8765/`.
 
 **No separate Python or Node.js installation is required.** Alternatively, extract the entire portable ZIP and run `Ai4PDF.exe`. Both editions use the current user's library, rather than storing documents beside the executable.
 
 Closing the browser leaves the local service running; use **Quit** in the tray menu to stop it. Updates preserve an existing library. Uninstall retains documents and library settings. To move existing documents, use Settings > Library migration.
+
+**Updates:** Starting with v1.0.1, use **Settings → Software updates → Check for updates**. The installed edition can download a stable GitHub Release, verify its SHA-256 hash, and **Install update and restart**. It keeps the installation folder, library, annotations, translations, saved settings and local port. Active saving, translation, chat or migration blocks installation. API keys not set to be remembered must be entered again after restarting. Source and portable editions link to the release page for manual updates.
+
+v1.0.0 users need to install v1.0.1 manually once: quit the old app and run the new installer over the existing installation. No uninstall or document reimport is needed.
 
 The installer is unsigned, so Windows may show an unknown-publisher warning. Download from this repository and verify files using `SHA256SUMS.txt`. Source archives and third-party notices accompany the binaries; ordinary users do not need to download them.
 

@@ -92,12 +92,21 @@ def run(args):
         return 1
     server = None
     icon = None
+    update_exit = threading.Event()
     try:
         with socket.socket() as probe:
             if probe.connect_ex(('127.0.0.1', args.port)) == 0:
                 show_error(f'端口 {args.port} 已被使用，请先退出旧版 Ai4PDF 或占用此端口的程序。\nPort {args.port} is in use. Close the previous app, then try again.', args.no_tray)
                 return 1
-        from app import app, LOCK
+        from app import app, LOCK, updater
+        from desktop_update import installed_directory, handoff
+        directory = installed_directory()
+        if directory:
+            def stop_for_update():
+                update_exit.set()
+                if icon:
+                    icon.stop()
+            updater.launcher = lambda path, digest: handoff(path, digest, directory, ROOT, args.port, stop_for_update)
         from waitress import create_server
         server = create_server(app, host='127.0.0.1', port=args.port, threads=8,
                                max_request_body_size=110 * 1024 * 1024, channel_timeout=600)
@@ -112,7 +121,7 @@ def run(args):
         if args.no_tray:
             if not args.no_browser:
                 webbrowser.open(url)
-            while worker.is_alive():
+            while worker.is_alive() and not update_exit.is_set():
                 worker.join(.5)
         else:
             import pystray

@@ -1,7 +1,8 @@
 import { messages as baseMessages } from './locales.js';
 import { libraryMessages } from './library-locales.js';
+import { updateMessages } from './update-locales.js';
 
-const messages=[...baseMessages,...libraryMessages];
+const messages=[...baseMessages,...libraryMessages,...updateMessages];
 
 export const locales=['zh-CN','zh-TW','ko','ja','en'];
 let current='zh-CN';

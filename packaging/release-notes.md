@@ -1,14 +1,23 @@
-## Ai4PDF v1.0.0 · PDF_AI助手
+## Ai4PDF v1.0.1 · PDF_AI助手
 
-首个公开发布版本。把 PDF 原文、逐段双语翻译、阅读批注和自定义 AI 问答放在一个本地工作台中。
+新增软件内检查更新。把 PDF 原文、逐段双语翻译、阅读批注和自定义 AI 问答放在一个本地工作台中。
+
+### 本次更新
+
+- 设置新增「软件更新」：检查 GitHub 最新正式版、查看更新说明、下载安装包并显示进度。
+- Windows 安装版下载后校验 SHA-256，点击「安装更新并重启」即可在原目录升级。
+- 升级保留当前文档库、批注、译文和已保存设置，沿用原端口；保存、翻译、问答和文档库迁移期间不会开始安装。
+- 下载或校验失败可重试；安装取消后尝试重新打开原程序。更新界面支持全部五种语言。
+- **v1.0.0 用户需先手动覆盖安装本版一次。** 先从托盘退出旧程序，再运行安装包；无需卸载或重新导入文档。之后可在软件内检查后续更新。
+- 源码版与便携版通过「发布页面」手动下载；未勾选记住的 API Key 重启后需重新输入。
 
 ### 下载哪个文件？
 
 | 文件 | 适合谁 |
 | --- | --- |
-| [Windows 安装包](https://github.com/Teslajia/Ai4PDF/releases/download/v1.0.0/Ai4PDF-1.0.0-windows-x64-setup.exe) | 推荐；双击安装，支持 Windows 10 / 11 x64 |
-| [免安装 ZIP](https://github.com/Teslajia/Ai4PDF/releases/download/v1.0.0/Ai4PDF-1.0.0-windows-x64-portable.zip) | 完整解压后运行 `Ai4PDF.exe` |
-| [Ai4PDF 源码](https://github.com/Teslajia/Ai4PDF/releases/download/v1.0.0/Ai4PDF-1.0.0-source.zip) | 开发者及开源再分发；普通使用无需下载 |
+| [Windows 安装包](https://github.com/Teslajia/Ai4PDF/releases/download/v1.0.1/Ai4PDF-1.0.1-windows-x64-setup.exe) | 推荐；双击安装，支持 Windows 10 / 11 x64 |
+| [免安装 ZIP](https://github.com/Teslajia/Ai4PDF/releases/download/v1.0.1/Ai4PDF-1.0.1-windows-x64-portable.zip) | 完整解压后运行 `Ai4PDF.exe` |
+| [Ai4PDF 源码](https://github.com/Teslajia/Ai4PDF/releases/download/v1.0.1/Ai4PDF-1.0.1-source.zip) | 开发者及开源再分发；普通使用无需下载 |
 
 无需另外安装 Python 或 Node.js。安装时可选择文档库文件夹，启动后在浏览器打开 `http://127.0.0.1:8765/`。AI 功能需自行配置 API 地址、模型和 Key。
 
@@ -32,8 +41,8 @@
 
 ### 校验与开源
 
-下载 `SHA256SUMS.txt` 后，可执行 `Get-FileHash .\Ai4PDF-1.0.0-windows-x64-setup.exe -Algorithm SHA256` 与清单核对。Release 同时附上 Ai4PDF、PyMuPDF 和 MuPDF 的对应源码及第三方声明；后两项无需用于普通安装。
+下载 `SHA256SUMS.txt` 后，可执行 `Get-FileHash .\Ai4PDF-1.0.1-windows-x64-setup.exe -Algorithm SHA256` 与清单核对。Release 同时附上 Ai4PDF、PyMuPDF 和 MuPDF 的对应源码及第三方声明；后两项无需用于普通安装。
 
-许可：AGPL-3.0。[项目介绍](https://github.com/Teslajia/Ai4PDF) · [使用指南](https://github.com/Teslajia/Ai4PDF/blob/v1.0.0/docs/USAGE.zh-CN.md) · [构建与迁移说明](https://github.com/Teslajia/Ai4PDF/blob/v1.0.0/RELEASE.md)
+许可：AGPL-3.0。[项目介绍](https://github.com/Teslajia/Ai4PDF) · [使用指南](https://github.com/Teslajia/Ai4PDF/blob/v1.0.1/docs/USAGE.zh-CN.md) · [构建与迁移说明](https://github.com/Teslajia/Ai4PDF/blob/v1.0.1/RELEASE.md)
 
-**English:** Download the Windows x64 installer, or extract the portable ZIP and run `Ai4PDF.exe`. No Python/Node.js setup is required. Bring your own Chat Completions API for AI features. Documents remain local and survive uninstall; AI requests send relevant text/images to your configured provider. No built-in OCR or bilingual PDF export is included. See the [English README](https://github.com/Teslajia/Ai4PDF/blob/v1.0.0/README.en.md).
+**English:** Download the Windows x64 installer, or extract the portable ZIP and run `Ai4PDF.exe`. No Python/Node.js setup is required. Bring your own Chat Completions API for AI features. Documents remain local and survive uninstall; AI requests send relevant text/images to your configured provider. No built-in OCR or bilingual PDF export is included. See the [English README](https://github.com/Teslajia/Ai4PDF/blob/v1.0.1/README.en.md).

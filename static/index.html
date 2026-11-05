@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/vendor/katex/dist/katex.min.css">
   <link rel="stylesheet" href="/static/style.css?v=translation-fold-1">
   <link rel="stylesheet" href="/static/library.css?v=1">
+  <link rel="stylesheet" href="/static/updates.css?v=1">
   <link rel="stylesheet" href="/static/note-dialog.css?v=2">
   <link rel="stylesheet" href="/static/chat-math.css?v=1">
 </head>
@@ -100,6 +101,15 @@
     <p id="library-storage-count" role="status"></p><button type="button" id="library-open-settings" class="button">管理文档库</button>
     <details class="library-migration-options"><summary>迁移文档库位置</summary><p>复制全部文档、批注、译文、对话、图片和分类，校验后切换。原目录保留为备份。</p><label for="library-new-path">新的存储位置</label><input id="library-new-path" placeholder="例如：D:\Ai4PDFLibrary" autocomplete="off"><small>请输入空文件夹或尚不存在的文件夹的绝对路径。</small><p id="library-environment" hidden>文档库位置由环境变量指定，请修改环境变量后重启。</p><button type="button" id="library-migrate" class="button">迁移并切换</button><progress id="library-migration-progress" max="1" value="0" hidden></progress><p id="library-migration-status" role="status"></p><p id="library-migration-detail"></p></details>
   </section>
+  <section class="update-section" aria-labelledby="update-title">
+    <div class="update-heading"><h3 id="update-title">软件更新</h3><span id="update-current" data-user-content>Ai4PDF</span></div>
+    <p>更新保留文档库、批注、译文和已保存的设置。未勾选记住的 API Key 需在重启后重新输入。</p>
+    <p id="update-mode" hidden>源码版和便携版请从发布页面下载更新。</p>
+    <p id="update-status" role="status" aria-live="polite">点击检查 GitHub 上的最新正式版本。</p>
+    <progress id="update-progress" max="100" value="0" aria-label="更新下载进度" hidden></progress>
+    <details id="update-notes" hidden><summary>更新说明</summary><pre id="update-notes-text" data-user-content></pre></details>
+    <div class="update-actions"><button type="button" class="button" id="update-check">检查更新</button><button type="button" class="button primary" id="update-download" hidden>下载安装包</button><button type="button" class="button primary" id="update-install" hidden>安装更新并重启</button><a id="update-release" href="https://github.com/Teslajia/Ai4PDF/releases/latest" target="_blank" rel="noopener noreferrer">发布页面 ↗</a></div>
+  </section>
   <h3 class="connection-section-title">连接你的 AI</h3><p class="dialog-intro">支持 OpenAI 兼容接口：云端服务、中转 API 或本机模型。</p>
   <label>显示名称<input id="api-display-name" maxlength="100" placeholder="例如：ChatGPT 官方"><small>自由命名，用于右侧助手的连接标识；留空则显示模型 ID。</small></label>
   <label>API 地址<input id="api-url" type="url" required placeholder="https://your-api.example.com/v1"><small>支持基础地址、以 /v1 结尾的地址，或完整的 /chat/completions 地址。</small></label>
@@ -108,5 +118,6 @@
   <label>API Key<div class="key-field"><input id="api-key" type="password" autocomplete="off" placeholder="sk-…（本机无鉴权服务可留空）"><button id="toggle-key" type="button" class="text-button">显示</button></div></label><label class="checkbox-label"><input type="checkbox" id="remember-key">在此浏览器记住 API Key</label><small class="key-info">默认仅保存在当前页面内存；勾选后存入此浏览器本地存储。API Key 不写入文档或服务器文件。</small><div id="connection-result" class="connection-result" role="status"></div><div class="dialog-actions"><button id="test-connection" class="button" type="button">测试连接</button><button type="submit" class="button primary">保存设置</button></div></form></dialog>
 <dialog id="note-dialog" aria-labelledby="note-title"><form id="note-form"><div class="dialog-heading note-drag-handle" tabindex="0" role="group" aria-label="移动批注窗口" title="拖动标题栏移动，或聚焦后用方向键微调"><div><h2 id="note-title">记下你的想法</h2><p class="note-move-hint">拖动标题栏移动</p></div><button type="button" class="icon-button close-dialog" aria-label="关闭批注"><svg><use href="#i-x"/></svg></button></div><blockquote id="note-quote"></blockquote><textarea id="note-text" rows="6" placeholder="疑问、灵感，或一个值得追问的细节…" aria-label="批注内容"></textarea><div class="dialog-actions"><button type="submit" class="button primary">保存批注</button></div></form></dialog>
 <div id="toast" class="toast" role="status" hidden></div><div id="loading" class="loading" hidden><span class="spinner"></span><span id="loading-text">正在打开文档…</span></div><div id="drop-overlay" class="drop-overlay" hidden><svg><use href="#i-plus"/></svg><h2>放下 PDF，开始阅读</h2></div>
-<script type="module" src="/static/app.js?v=translation-fold-1"></script>
+<dialog id="update-restart-dialog" aria-labelledby="update-restart-title"><h2 id="update-restart-title">正在更新 Ai4PDF</h2><p id="update-restart-status" role="status">正在安装更新，请等待软件重新启动。</p><p>此页面会在更新完成后自动刷新。</p><div class="dialog-actions"><a href="https://github.com/Teslajia/Ai4PDF/releases/latest" target="_blank" rel="noopener noreferrer">发布页面 ↗</a><button type="button" class="button" id="update-return" hidden>重新连接</button></div></dialog>
+<script type="module" src="/static/app.js?v=updates-1"></script>
 </body></html>

@@ -771,6 +771,8 @@ def chat(doc_id):
 
 
 library = register_library(sys.modules[__name__])
+from updates import register as register_updates
+updater = register_updates(sys.modules[__name__])
 
 
 if __name__ == '__main__':

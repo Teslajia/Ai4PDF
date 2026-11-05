@@ -2,7 +2,7 @@
 
 ## 给使用者
 
-- Windows 10 / 11，64 位（x64）。下载 `Ai4PDF-1.0.0-windows-x64-setup.exe`，双击安装，安装完成即可使用。
+- Windows 10 / 11，64 位（x64）。下载 `Ai4PDF-1.0.1-windows-x64-setup.exe`，双击安装，安装完成即可使用。
 - 无需安装 Python、Node.js 或单独下载前端依赖。默认浏览器中运行阅读界面，本地服务只监听 `127.0.0.1`。
 - 桌面及开始菜单提供 Ai4PDF 快捷方式。启动后自动打开界面，任务栏通知区域提供打开、日志、退出菜单。关闭网页不会停止服务；退出请使用托盘菜单。
 - 安装默认无需管理员权限。安装向导分别提供「程序安装位置」和「本地文档库位置」：文档库可直接输入路径或点击「浏览」，例如 `D:\Ai4PDF Library`，支持中文及带空格的文件夹。可选空文件夹或已有的 Ai4PDF 文档库；普通 PDF 文件夹不会自动导入。安装完成后的首次启动立即使用所选位置。
@@ -11,6 +11,14 @@
 - 便携 ZIP 解压后运行 `Ai4PDF.exe`，也无需环境安装。它同样使用上述用户数据目录，不把文档放在解压目录中。
 - AI 问答和翻译仍需要在设置中填写自己的 API 地址、模型及 Key。PDF 阅读和批注无需 AI API。
 - 首次发布的安装包尚无代码签名证书，Windows SmartScreen 可能提示未知发布者。请核对下载来源及 `SHA256SUMS.txt`。
+
+## 软件内更新
+
+从 v1.0.1 起，安装版可在「设置 → 软件更新」检查 GitHub 正式版。检查使用公开 Release API，不需要 GitHub 账号，也不发送文档、API Key 或个人配置。仅在点击检查/下载时联网，不会后台自动安装。
+
+下载安装包后校验 Release 的 SHA-256 信息；缺少校验值、文件不完整或校验失败时不会安装。点击「安装更新并重启」会等待旧进程退出，在相同安装目录升级，然后沿用原端口重新启动。文档库位置、PDF、批注、译文、对话及浏览器已保存设置保持不变。保存、翻译、问答或迁移未完成时不能开始安装。
+
+请继续使用原浏览器与访问地址；未勾选记住的 API Key 只在页面内存中，重启后需重新输入。源码版和便携版提供 Release 下载入口，按原方式手动更新。v1.0.0 没有更新入口，需先退出旧程序并手动覆盖安装 v1.0.1 一次，无需卸载。
 
 ## 现有源码版用户
 
@@ -32,7 +40,7 @@ powershell -ExecutionPolicy Bypass -File packaging/build.ps1
 
 可用 `-Python C:\Python313\python.exe` 指定解释器，`-InnoCompiler C:\tools\ISCC.exe` 指定现有 Inno Setup 7。已装好构建依赖时可用 `-SkipDependencies`。
 
-无人值守首次安装可使用 `Ai4PDF-1.0.0-windows-x64-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /LIBRARYDIR="D:\Ai4PDF Library"`。无效路径或试图切换已有资料的库会返回非零退出码；原配置保持不变。安装器使用 Windows 自带的 PowerShell 校验目录及原子保存 UTF-8 配置，不需要另装 Python。
+无人值守首次安装可使用 `Ai4PDF-1.0.1-windows-x64-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /LIBRARYDIR="D:\Ai4PDF Library"`。无效路径或试图切换已有资料的库会返回非零退出码；原配置保持不变。安装器使用 Windows 自带的 PowerShell 校验目录及原子保存 UTF-8 配置，不需要另装 Python。
 
 产物在 `release/`：安装 EXE、便携 ZIP、Ai4PDF 源码 ZIP、对应版本的 PyMuPDF/MuPDF 源码包、第三方声明、SHA256 清单。源码归档按白名单生成，排除文档库、迁移位置文件、虚拟环境、缓存和日志。`dist/Ai4PDF/` 是未压缩运行目录。
 
@@ -40,7 +48,7 @@ powershell -ExecutionPolicy Bypass -File packaging/build.ps1
 
 ## 上传 GitHub
 
-将项目根目录的源码上传为仓库根目录，不要上传 `data/`、`library-location.json`、`.venv/`、`.build-venv/`、`node_modules/`、`tmp/`、`dist/` 或 `release/`。已有 `.gitignore` 排除这些项目；本次同时生成的 `Ai4PDF-1.0.0-source.zip` 是可直接解压用于建仓库的干净源码。
+将项目根目录的源码上传为仓库根目录，不要上传 `data/`、`library-location.json`、`.venv/`、`.build-venv/`、`node_modules/`、`tmp/`、`dist/` 或 `release/`。已有 `.gitignore` 排除这些项目；本次同时生成的 `Ai4PDF-1.0.1-source.zip` 是可直接解压用于建仓库的干净源码。
 
 仓库使用 AGPL-3.0，保留 LICENSE、NOTICE 及第三方许可证。创建 Release 时应同时上传安装包、便携包、Ai4PDF 源码和匹配的 PyMuPDF/MuPDF 源码，不要只发布 EXE。
 
@@ -51,7 +59,7 @@ powershell -ExecutionPolicy Bypass -File packaging/build.ps1
 从同一 Release 下载 `SHA256SUMS.txt`，用 PowerShell 计算文件的 SHA256，并逐字符与清单对应行比较：
 
 ```powershell
-Get-FileHash .\Ai4PDF-1.0.0-windows-x64-setup.exe -Algorithm SHA256
+Get-FileHash .\Ai4PDF-1.0.1-windows-x64-setup.exe -Algorithm SHA256
 ```
 
 ## 启动诊断
