@@ -5,9 +5,10 @@ and graphic bounding boxes only decide safe places to insert translations.
 """
 from collections import defaultdict, deque
 import pymupdf as fitz
-from pdf_geometry import drawing_has_ink, infer_gutter
+from pdf_geometry import visible_drawings, infer_gutter
+from translation_visuals import build_visuals
 
-VERSION = 4
+VERSION = 9
 
 
 def merged_intervals(intervals):
@@ -53,6 +54,7 @@ def build_layout(pdf, stored, fresh, protected_pages=()):
     pages = []
     for n, page in enumerate(pdf, 1):
         bounds = page.rect
+        protected_regions=next((item['regions'] for item in protected_pages if item['page']==n),[])
         paragraphs = by_page[n]
         obstacles = []
         graphics = []
@@ -78,9 +80,7 @@ def build_layout(pdf, stored, fresh, protected_pages=()):
                 obstacles.append(rect)
         for image in page.get_image_info():
             graphics.append(displayed(image['bbox']))
-        for drawing in page.get_drawings():
-            if not drawing_has_ink(drawing):
-                continue
+        for drawing in visible_drawings(page):
             rect = displayed(drawing['rect'])
             # Page borders/backgrounds are still in the image, but are not content dividers.
             if rect.width > bounds.width*.95 and rect.height > bounds.height*.95:
@@ -91,6 +91,7 @@ def build_layout(pdf, stored, fresh, protected_pages=()):
         for protected in protected_pages:
             if protected['page'] == n:
                 obstacles += [displayed(region['bbox']) for region in protected['regions']]
+                graphics += [displayed(region['bbox']) for region in protected['regions'] if region['kind']=='table']
         obstacles += [fitz.Rect(p['bbox']) for p in paragraphs if p['bbox'] and not (
             fitz.Rect(p['bbox']).height > bounds.height*.3 and fitz.Rect(p['bbox']).width < 30)]
 
@@ -154,5 +155,6 @@ def build_layout(pdf, stored, fresh, protected_pages=()):
             columns = [column_tiles(0,top,gutter,bottom),column_tiles(gutter,top,bounds.width,bottom)] if two else [column_tiles(0,top,bounds.width,bottom)]
             rows.append({'columns':columns})
         pages.append({'page':n,'width':bounds.width,'height':bounds.height,'twoColumns':gutter is not None,
-                      'rows':rows,'unplacedIds':[p['id'] for p in paragraphs if p['id'] not in used]})
+                      'rows':rows,'unplacedIds':[p['id'] for p in paragraphs if p['id'] not in used],
+                      'visuals':build_visuals(page,protected_regions)})
     return {'version':VERSION,'pages':pages}

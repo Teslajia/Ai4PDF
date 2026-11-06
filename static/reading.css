@@ -1,0 +1,21 @@
+.translation-only #paragraphs{max-width:850px;margin-inline:auto}
+.reader-toolbar{flex-wrap:wrap;height:auto;min-height:64px;padding-top:8px;padding-bottom:8px}
+.source-page-plane .link-overlays{position:absolute;inset:0;pointer-events:none;z-index:4}
+.reference-citation{color:inherit;text-decoration:underline;text-decoration-color:#77a18e;text-underline-offset:3px;cursor:pointer}
+.reference-citation:hover{background:#e5eee1}
+.reference-menu{position:fixed;margin:0;padding:8px;inset:auto;border:1px solid #d4dfd0;border-radius:10px;box-shadow:0 8px 26px #253e3520;background:white;width:min(390px,calc(100vw - 32px));max-height:280px;overflow:auto}
+.reference-menu button{display:block;width:100%;padding:9px;text-align:left;border:0;border-radius:5px;background:none;color:#314a40;font:inherit;line-height:1.5;cursor:pointer}
+.reference-menu button:hover,.reference-menu button:focus-visible{background:#edf3e9}
+#reading-back{flex-shrink:0;color:#276b58;font-size:12px}
+.reader-footer:has(#reading-back:not([hidden])) #reader-hint{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.translation-only .paragraph{background:#f5f8ef;padding:20px 24px;margin-bottom:14px;border-radius:8px}
+.translation-only .translated-text{font-size:15px;line-height:1.95}
+.translated-page{margin-bottom:32px}
+.translation-visual{margin:0 0 18px;border:1px solid #dce5d6;border-radius:8px;overflow:hidden;background:#fff}
+.translation-visual figcaption{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #edf1e8;font-size:11px;color:#73866b}
+.visual-zoom{flex-shrink:0;font-size:11px}
+.visual-crop img{inset:0;width:100%;height:100%}
+.visual-crop{margin:12px auto}
+.visual-crop.image-error::after{content:none}
+.visual-retry{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;white-space:nowrap}
+@media(max-width:800px){.reader-toolbar{flex-wrap:wrap;justify-content:space-between;gap:6px;height:auto;min-height:58px;padding:8px 10px}.translation-only .paragraph{padding:14px 12px}.translation-only .translated-text{font-size:14px}}

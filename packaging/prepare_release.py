@@ -20,8 +20,8 @@ SOURCE_FILES = (
     '.gitignore', 'LICENSE', 'NOTICE', 'README.md', 'README.en.md',
     'README.zh-TW.md', 'README.ja.md', 'README.ko.md', 'CONTRIBUTING.md',
     'CHANGELOG.md', 'RELEASE.md', 'app.py', 'desktop.py',
-    'runtime_paths.py', 'version.py', 'updates.py', 'desktop_update.py', 'layout.py', 'library.py', 'manual_layout.py',
-    'pdf_geometry.py', 'translation_policy.py', 'requirements.txt', 'requirements-desktop.txt',
+    'runtime_paths.py', 'version.py', 'updates.py', 'desktop_update.py', 'reasoning.py', 'layout.py', 'library.py', 'manual_layout.py',
+    'pdf_geometry.py', 'translation_policy.py', 'translation_visuals.py', 'table_regions.py', 'figure_regions.py', 'references.py', 'requirements.txt', 'requirements-desktop.txt',
     'requirements-build.lock', 'package.json', 'package-lock.json', 'setup.ps1', 'start.cmd', 'start.ps1',
 )
 SOURCE_DIRS = ('static', 'tests', 'packaging', '.github', 'docs')

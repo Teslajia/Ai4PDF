@@ -21,7 +21,7 @@ export async function sourceTextPage(pdf, number) {
       return {node:span.cloneNode(true),rect:[r.left-box.left,r.top-box.top,r.right-box.left,r.bottom-box.top],
         eol:span.nextElementSibling?.tagName==='BR'};
     });
-    return {viewport,layer:layer.cloneNode(false),runs};
+    return {viewport,layer:layer.cloneNode(false),runs,annotations:await page.getAnnotations()};
   } finally { holder.remove(); }
 }
 

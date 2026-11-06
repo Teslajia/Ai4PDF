@@ -21,7 +21,7 @@ def response(status=200):
 def test_actual_model_and_reasoning_sent_for_chat_translation_and_test(client, effort):
     doc = upload(client)
     pid = next(p['id'] for p in doc['paragraphs'] if p['translatable'])
-    config = {'baseUrl': 'http://localhost:44444/v1', 'model': 'actual-model-id',
+    config = {'baseUrl': 'https://api.openai.com/v1' if effort == 'max' else 'http://localhost:44444/v1', 'model': 'gpt-6-sol' if effort == 'max' else 'actual-model-id',
               'displayName': 'ChatGPT 官方', 'apiKey': 'test-only-key', 'recentModels': ['old-model']}
     if effort is not None:
         config['reasoningEffort'] = effort
@@ -34,7 +34,7 @@ def test_actual_model_and_reasoning_sent_for_chat_translation_and_test(client, e
             assert result.status_code == 200, result.data
             assert '本地模拟回答' in (str(result.json) if result.is_json else result.get_data(as_text=True))
             outgoing = upstream.call_args.kwargs['json']
-            assert outgoing['model'] == 'actual-model-id'
+            assert outgoing['model'] == config['model']
             assert 'displayName' not in outgoing and 'recentModels' not in outgoing
             assert 'apiKey' not in outgoing
             if effort in (None, 'default'):

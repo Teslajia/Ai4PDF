@@ -25,8 +25,8 @@ The interface runs in your browser, served by a local application. No Ai4PDF acc
 
 ## Features
 
-- **Original PDFs:** preserve figures, equations and page layout, with selectable text, outline, search and saved reading position.
-- **Bilingual reading:** insert translations after original paragraphs; choose a page range, pause/resume, retry one paragraph, or collapse its translation.
+- **Original PDFs:** preserve figures, equations and page layout, with selectable text, outline, search, reference links, a back action and saved positions within pages.
+- **Bilingual / translation-only reading:** alternate original paragraphs with translations or read translations alone; choose a page range, pause/resume, retry or collapse paragraphs. Switching views follows your reading position.
 - **Annotations:** highlight, underline and comment on original or translated text; click to edit an annotation and drag the note window aside.
 - **Annotated PDF export:** export highlights, underlines and notes on the original text as native PDF annotations in a separate file, preserving the original PDF.
 - **Your AI:** configure endpoint, model ID, display name and reasoning effort. Ask about selected text, attach images and follow page references. Mathematics renders with KaTeX.
@@ -40,12 +40,23 @@ Interface and translation targets support **Simplified Chinese, Traditional Chin
 
 Original regions have an overlaid PDF text layer for selection and copying. The bilingual view preserves original PDF content and inserts web text translations; it does not create a newly typeset bilingual PDF.
 
+## What's new in v1.1.0
+
+- **Translation with figures and tables:** choose “Translation only” beside the bilingual tab to read translations alongside detected original figures, tables and display equations. Captions use the saved translations. Where a PDF text layer exists, select, copy and annotate text inside figures and tables, or open a larger preview.
+- **Improved recognition:** use captions, panels, axes and labels to identify complete figures; keep table captions associated with tables and ignore vector paths hidden by PDF clipping. Small images retain a sensible size, and tall images fit the viewport proportionally.
+- **References and reading positions:** follow native PDF links and recognized numbered citations such as `[1]`, `[2, 3]` and `[4–6]`, then return to your place. Switching between the original, bilingual and translation-only views follows the reading position.
+- **Settings improvements:** reasoning levels reflect model and endpoint capabilities, unsupported saved choices fall back to the default, and settings dialog corners are consistent.
+
+Views share saved translations and annotations; switching does not trigger extra translation API calls. Reopening an existing document refreshes recognition caches while retaining the library, manual segmentation and saved settings. Artwork text remains in its original language. Markdown exports can contain bilingual text or translations only, but do not embed artwork. See the [changelog](CHANGELOG.md).
+
+![Translation-only reading](docs/assets/translation-only.png)
+
 ## Installation
 
 ### Windows 10 / 11, x64
 
 1. Open the [latest Release](https://github.com/Teslajia/Ai4PDF/releases/latest).
-2. Download and run `Ai4PDF-1.0.1-windows-x64-setup.exe`.
+2. Download and run `Ai4PDF-1.1.0-windows-x64-setup.exe`.
 3. Choose application and library folders. Select an empty folder or an existing Ai4PDF library.
 4. Start Ai4PDF. Your browser opens `http://127.0.0.1:8765/`.
 
@@ -55,7 +66,7 @@ Closing the browser leaves the local service running; use **Quit** in the tray m
 
 **Updates:** Starting with v1.0.1, use **Settings → Software updates → Check for updates**. The installed edition can download a stable GitHub Release, verify its SHA-256 hash, and **Install update and restart**. It keeps the installation folder, library, annotations, translations, saved settings and local port. Active saving, translation, chat or migration blocks installation. API keys not set to be remembered must be entered again after restarting. Source and portable editions link to the release page for manual updates.
 
-v1.0.0 users need to install v1.0.1 manually once: quit the old app and run the new installer over the existing installation. No uninstall or document reimport is needed.
+v1.0.0 users can upgrade directly to v1.1.0 without an intermediate version: quit the old app and run the new installer over the existing installation. No uninstall or document reimport is needed.
 
 The installer is unsigned, so Windows may show an unknown-publisher warning. Download from this repository and verify files using `SHA256SUMS.txt`. Source archives and third-party notices accompany the binaries; ordinary users do not need to download them.
 

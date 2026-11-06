@@ -1,5 +1,6 @@
 // Provider catalogs stay in memory, scoped to the endpoint and credentials.
 // Only explicitly requested model-list lookups contact the configured provider.
+import { rememberReasoning } from './reasoning.js';
 const catalogs = new Map();
 const connectionKey = ({baseUrl='',apiKey=''}) => JSON.stringify([baseUrl.trim().replace(/\/+$/,''),apiKey.trim()]);
 
@@ -71,6 +72,7 @@ export class ModelPicker {
       if(id!==this.requestId||key!==connectionKey(this.getConnection()))return;
       if(!response.ok)throw new Error(result.error||'获取模型列表失败。');
       catalogs.set(key,result.models);
+      rememberReasoning(config,result.reasoningEfforts);
       this.info(result.models.length?`已获取 ${result.models.length} 个模型。请选择支持对话的模型。`:'API 返回了空列表，仍可手动填写模型 ID。');
       this.open();
     }catch(error){

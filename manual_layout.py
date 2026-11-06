@@ -167,13 +167,17 @@ def apply_document(d,manual):
     if pages:
         by_page=defaultdict(list)
         for p in d['paragraphs']:by_page[p['page']].append(p)
+        current={p['id']:p for p in d['paragraphs']}
+        # Geometry-only manual edits retain original IDs. Refresh their policy
+        # from the current detector, while preserving explicit custom text/skip.
         d['translationParagraphs']=[
-            p for n in range(1,d['pageCount']+1) for p in (pages[str(n)]['paragraphs'] if str(n) in pages else by_page[n])]
+            (current.get(p['id'],p) if not p.get('manual') else p)
+            for n in range(1,d['pageCount']+1) for p in (pages[str(n)]['paragraphs'] if str(n) in pages else by_page[n])]
     d['manualPages']=[int(n) for n in pages]
     d['manualRevision']=manual.get('revision','0')
     return d
 
 
 def apply_layout(automatic,manual):
-    return automatic|{'pages':[manual.get('pages',{}).get(str(p['page']),{}).get('layout',p) for p in automatic['pages']],
+    return automatic|{'pages':[manual.get('pages',{}).get(str(p['page']),{}).get('layout',p)|{'visuals':p.get('visuals',[])} for p in automatic['pages']],
                       'manualRevision':manual.get('revision','0')}

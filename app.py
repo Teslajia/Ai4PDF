@@ -24,6 +24,7 @@ from werkzeug.exceptions import HTTPException
 from library import initial_location, catalog, trashed, register as register_library
 from runtime_paths import configuration_root, instance_id
 from version import VERSION
+from reasoning import POLICY as REASONING_POLICY, available_efforts, remember_capabilities
 
 ROOT = Path(__file__).resolve().parent
 CONFIG_ROOT = configuration_root(ROOT)
@@ -286,6 +287,21 @@ def document_layout(doc_id):
         return jsonify(apply_layout(automatic_layout(doc_id,read_doc(doc_id)),read_manual(doc_id)))
 
 
+@app.get('/api/documents/<doc_id>/references')
+def document_references(doc_id):
+    from references import build_references, VERSION
+    with LOCK:
+        path=folder(doc_id);cache=path/'references.json'
+        if cache.exists():
+            result=json.loads(cache.read_text(encoding='utf-8'))
+            if result.get('version')==VERSION:
+                return jsonify(result)
+        with fitz.open(path/'original.pdf') as pdf:
+            result=build_references(pdf)
+        write_json(cache,result)
+        return jsonify(result)
+
+
 def automatic_layout(doc_id,d):
     from layout import build_layout, VERSION
     with LOCK:
@@ -366,6 +382,24 @@ def update_state(doc_id):
             s['page'] = max(1, min(int(body['page']), read_doc(doc_id)['pageCount']))
         write_json(folder(doc_id) / 'state.json', s)
         return jsonify(ok=True)
+
+
+@app.get('/api/documents/<doc_id>/pages/<int:page_number>/visuals/<visual_id>/image')
+def visual_image(doc_id,page_number,visual_id):
+    with LOCK:
+        d=read_doc(doc_id)
+        if not 1<=page_number<=d['pageCount']:return fail('页码超出范围',404)
+        page_layout=automatic_layout(doc_id,d)['pages'][page_number-1]
+        visual=next((item for item in page_layout.get('visuals',[]) if item['id']==visual_id),None)
+        if visual is None:return fail('图表区域不存在，请重新打开文档。',404)
+        cache=folder(doc_id)/'previews';cache.mkdir(exist_ok=True)
+        image=cache/f'visual-{page_number}-{visual_id}.png'
+        if not image.exists():
+            with fitz.open(folder(doc_id)/'original.pdf') as pdf:
+                rect=fitz.Rect(visual['rect'])
+                scale=min(6,1800/rect.width,math.sqrt(4_000_000/rect.get_area()))
+                pdf[page_number-1].get_pixmap(matrix=fitz.Matrix(scale,scale),clip=rect,alpha=False,annots=False).save(image)
+        return send_file(image,mimetype='image/png',conditional=True)
 
 
 def image_attachment(doc_id, attachment_id):
@@ -604,7 +638,7 @@ def list_models():
             models = sorted({entry['id'].strip() for entry in entries if isinstance(entry, dict)
                              and isinstance(entry.get('id'), str) and entry['id'].strip()
                              and len(entry['id']) <= 512}, key=str.casefold)
-            return jsonify(models=models)
+            return jsonify(models=models, reasoningEfforts=remember_capabilities(request.get_json().get('config', {}), entries))
     except requests.RequestException:
         raise ValueError('获取模型列表失败或超时，请检查 API 地址和网络；仍可手动填写模型 ID。') from None
 
@@ -613,8 +647,10 @@ def reasoning_options(body):
     effort = body.get('config', {}).get('reasoningEffort', 'default')
     if effort in (None, '', 'default'):
         return {}
-    if not isinstance(effort, str) or effort not in ('none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'):
+    if not isinstance(effort, str) or effort not in REASONING_POLICY['values']:
         raise ValueError('思考强度无效，请重新选择或使用「跟随模型默认」。')
+    if effort not in available_efforts(body.get('config', {})):
+        raise ValueError('当前模型或接口未声明支持此思考强度，请获取模型列表或使用「跟随模型默认」。')
     return {'reasoning_effort': effort}
 
 

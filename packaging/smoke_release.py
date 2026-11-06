@@ -74,6 +74,8 @@ def main(executable, browser_check=False):
             storage = get('/api/library/storage').json()
             assert Path(storage['path']).resolve() == (home / 'data').resolve(), storage
             for asset in ('/static/app.js', '/static/library.js', '/static/chat-markdown.js',
+                          '/static/translated-view.js', '/static/reading-position.js', '/static/references.js',
+                          '/static/reading-locales.js', '/static/reading.css', '/static/reasoning-models.json',
                           '/static/app-icon.png', '/vendor/pdfjs-dist/build/pdf.mjs',
                           '/vendor/pdfjs-dist/build/pdf.worker.mjs', '/vendor/pdfjs-dist/web/pdf_viewer.css',
                           '/vendor/marked/lib/marked.esm.js', '/vendor/dompurify/dist/purify.es.mjs',
@@ -93,6 +95,8 @@ def main(executable, browser_check=False):
             with pymupdf.open() as pdf:
                 page = pdf.new_page()
                 page.insert_text((72, 100), 'Ai4PDF packaged release annotation test.', fontsize=14)
+                page.draw_rect((72,150,260,240),fill=(.2,.5,.7))
+                page.insert_text((72,265),'Figure 1. Packaged visual rendering.',fontsize=11)
                 quad = page.search_for('annotation')[0].quad * ~page.transformation_matrix
                 coords = [v for point in quad for v in point]
                 original = pdf.tobytes()
@@ -100,7 +104,11 @@ def main(executable, browser_check=False):
             assert response.status_code == 200, response.text
             doc = response.json()
             path = '/api/documents/' + doc['id']
-            assert get(path + '/layout').json()['pages']
+            layout=get(path + '/layout').json()
+            visuals=layout['pages'][0]['visuals']
+            assert visuals and visuals[0]['kind']=='figure'
+            assert get(path+f"/pages/1/visuals/{visuals[0]['id']}/image").headers['Content-Type'].startswith('image/png')
+            assert '1' in get(path+'/references').json()['citations']
             assert get(path + '/pages/1/image').headers['Content-Type'].startswith('image/png')
             annotation = {'page': 1, 'kind': 'highlight', 'text': 'annotation', 'note': '打包验证',
                           'color': '#f4ca64', 'rects': [[.1, .1, .2, .03]], 'quads': [coords]}
@@ -157,6 +165,10 @@ def main(executable, browser_check=False):
                         return element.querySelectorAll('.katex').length;
                     }""")
                     assert math == 1
+                    page.locator('#translated-tab').click()
+                    expect(page.locator('.translated-page')).to_have_count(3)
+                    assert page.locator('.original-text:visible').count()==0
+                    expect(page.locator('.version-tag')).to_have_text('V'+'.'.join(VERSION.split('.')[:2]))
                     assert not errors, errors
                     page.screenshot(path=str(ROOT / 'tmp' / 'release-browser-check.png'))
                     browser.close()

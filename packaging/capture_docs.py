@@ -87,6 +87,10 @@ def main():
                 page.locator('#translation-view').evaluate('(element) => element.scrollTop = 850')
                 page.locator('#messages').evaluate('(element) => element.scrollTop = 0')
                 page.screenshot(path=str(output / 'bilingual.png'))
+                page.locator('#translated-tab').click()
+                expect(page.locator('.translated-page')).to_have_count(3)
+                page.locator('#translation-view').evaluate('(element) => element.scrollTop = 450')
+                page.screenshot(path=str(output / 'translation-only.png'))
                 browser.close()
         finally:
             http.shutdown()

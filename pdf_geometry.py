@@ -3,6 +3,32 @@ from statistics import median
 import pymupdf as fitz
 
 
+def visible_drawings(page):
+    """Bound vector paths by the active PDF clips, in unrotated coordinates.
+
+    Embedded figures can retain off-canvas paths in their content streams.
+    get_drawings() alone reports these even when the PDF clips them away.
+    Extended paths expose the clip/group scope through their nesting levels.
+    """
+    bounds=fitz.Rect(0,0,page.cropbox.width,page.cropbox.height)
+    scopes=[]
+    for drawing in page.get_drawings(extended=True):
+        level=drawing['level']
+        while scopes and scopes[-1][0]>=level:scopes.pop()
+        clip,opacity=scopes[-1][1:] if scopes else (bounds,1)
+        kind=drawing['type']
+        if kind=='clip':
+            scopes.append((level,clip&fitz.Rect(drawing['scissor']),opacity));continue
+        if kind=='group':
+            scopes.append((level,clip,opacity*drawing.get('opacity',1)));continue
+        if opacity<=0 or clip.is_empty or not drawing_has_ink(drawing):continue
+        raw=fitz.Rect(drawing['rect'])
+        rect=fitz.Rect(max(raw.x0,clip.x0),max(raw.y0,clip.y0),min(raw.x1,clip.x1),min(raw.y1,clip.y1))
+        # Zero-height/width strokes are real axes and rules; keep them.
+        if rect.x1<rect.x0 or rect.y1<rect.y0:continue
+        yield drawing|{'rect':rect}
+
+
 def drawing_has_ink(drawing):
     stroke = drawing.get('color') is not None and (drawing.get('stroke_opacity') or 0) > 0
     fill = drawing.get('fill')

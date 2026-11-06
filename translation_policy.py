@@ -7,11 +7,12 @@ from collections import defaultdict, deque
 import hashlib
 import re
 import pymupdf as fitz
-from pdf_geometry import drawing_has_ink, infer_gutter, column_of
+from pdf_geometry import infer_gutter, column_of
+from table_regions import TABLE_CAPTION, captioned_tables
+from figure_regions import CAPTION, figure_regions
 
-VERSION = 3
+VERSION = 6
 MATH_FONT = re.compile(r'(?:CMMI|CMSY|CMEX|MSAM|MSBM|MATH|SYMBOL|MTEX|STIX.*(?:SY|EX))', re.I)
-CAPTION = re.compile(r'^\s*(?:fig(?:ure)?\.?\s*\d+|图\s*\d+)', re.I)
 EQUATION_NUMBER = re.compile(r'^\s*[（(]\s*\d{1,3}[a-z]?\s*[）)]\s*[,.;]?\s*$', re.I)
 
 
@@ -54,23 +55,32 @@ def formula_line(line):
         return True
     total = sum(len(s['text'].strip()) for s in line['spans']) or 1
     math = sum(len(s['text'].strip()) for s in line['spans'] if MATH_FONT.search(s['font']))
-    plain = ' '.join(s['text'] for s in line['spans'] if not MATH_FONT.search(s['font']))
+    largest=max((s.get('size',10) for s in line['spans']),default=10)
+    # Roman words in small subscripts (e.g. S_fgc-global) are math labels,
+    # not evidence of a prose sentence. Main-line prose still takes priority.
+    plain = ' '.join(s['text'] for s in line['spans'] if not MATH_FONT.search(s['font'])
+                     and not (math/total>.1 and s.get('size',largest)<largest*.82))
     words = re.findall(r'[A-Za-z]{3,}', plain)
     cjk = re.findall(r'[\u3400-\u9fff]', plain)
     # Preserve prose with inline variables, references, and explanatory clauses.
-    prose_words = [w for w in words if w.lower() not in {'sin','cos','tan','log','exp','max','min','lim','arg','sum','frac','sqrt','text','left','right'}]
-    if re.search(r'\b(?:here|where|resulting|denotes|given|using)\b',plain,re.I):
+    functions={w.lower() for w in re.findall(r'\b([A-Za-z][A-Za-z0-9]*)\s*\(',text)}
+    variables={w.lower() for w in re.findall(r'\b([A-Za-z][A-Za-z0-9_]*)\s*=',plain)}
+    prose_words = [w for w in words if w.lower() not in functions|variables|{'sin','cos','tan','log','exp','max','min','lim','arg','sum','frac','sqrt','text','left','right'}]
+    if re.search(r'\b(?:here|where|resulting|denotes|given|using|through|these|this)\b',plain,re.I):
         return False
-    if len(prose_words)<=3 and len(cjk)<6 and re.match(r'^[A-Za-z][A-Za-z0-9_′’]*(?:\([^)]*\))?\s*=',text):
+    if re.match(r'^\s*(?:we|our|the|a|an|it)\s+[A-Za-z]',plain,re.I):
+        return False
+    assignment=re.match(r'^[A-Za-z][A-Za-z0-9_′’\-]*(?:\([^)]*\))?\s*=',text)
+    if assignment and len(cjk)<6 and (len(prose_words)<=1 or len(prose_words)<=3 and re.search(r'=\s*[A-Za-z][A-Za-z0-9_]*\(',text)):
         return True  # A displayed assignment such as MHSA(U) = Concat(...).
-    if len(words) >= 4 or len(cjk) >= 6 or (len(prose_words) >= 2 and sum(map(len,prose_words)) >= 9):
+    if len(prose_words) >= 4 or len(cjk) >= 6 or (len(prose_words) >= 2 and sum(map(len,prose_words)) >= 9):
         return False
     if math/total >= .35:
         return True
     if re.search(r'\b(?:sin|cos|tan|log|exp|max|min|lim)\s*\(',text) and not prose_words:
         return True
     operators = re.findall(r'[=+−∑∫√±≈≠≤≥∈∞∂∇]|\\[A-Za-z]+|[_^{}]', text)
-    if operators and len(words) <= 2 and len(cjk) < 3:
+    if operators and len(prose_words) <= 2 and len(cjk) < 3:
         return True
     return False
 
@@ -158,36 +168,16 @@ def page_policy(page):
     lines = [line for block in page.get_text('dict', flags=fitz.TEXTFLAGS_DICT & ~fitz.TEXT_PRESERVE_IMAGES)['blocks']
              if block['type'] == 0 for line in block['lines'] if line_key(line)[1]]
     bounds = fitz.Rect(0, 0, page.cropbox.width, page.cropbox.height)
-    candidates = []
-    for image in page.get_image_info():
-        r = fitz.Rect(image['bbox']) & bounds
-        # A scanned full-page image is not a figure: its OCR prose must remain usable.
-        if r.width >= 8 and r.height >= 8 and r.get_area() < bounds.get_area()*.8:
-            candidates.append(r)
-    for drawing in page.get_drawings():
-        if not drawing_has_ink(drawing):
-            continue
-        r = drawing['rect'] & bounds
-        # Exclude text outlines, equation rules, page borders and page backgrounds.
-        if r.width >= 25 and r.height >= 20 and r.get_area() < bounds.get_area()*.8:
-            candidates.append(r)
-    figures = union_regions(candidates, 8, 8)
-    captions = [fitz.Rect(line['bbox']) for line in lines if CAPTION.match(line_key(line)[1])]
-    for caption in captions:
-        above = [r for r in figures if r.y1 <= caption.y0+1 and 0 <= caption.y0-r.y1 < 45
-                 and min(r.x1,caption.x1)-max(r.x0,caption.x0) > min(r.width,caption.width)*.25]
-        if above:
-            # Capture axis labels and panel headings around the artwork, while
-            # never consuming the separately translated figure caption.
-            for r in above:
-                r.y0 = max(0, r.y0-12); r.y1 = max(r.y1, caption.y0-2)
-                r.x0 = max(0, r.x0-5); r.x1 = min(bounds.x1, r.x1+5)
-    figures = union_regions(figures)
+    tables, table_regions, table_captions = captioned_tables(page,lines)
+    body_size=weighted_font_size([line for line in lines if len(line_key(line)[1])>=40])
+    figures=figure_regions(page,lines,body_size)
     kinds = {}
     for line in lines:
         key = line_key(line); r = fitz.Rect(line['bbox']); text = key[1]
-        if CAPTION.match(text):
+        if CAPTION.match(text) or TABLE_CAPTION.match(text) or key in table_captions:
             kind = 'text'
+        elif any((r & region).get_area() >= r.get_area()*.7 for region in tables):
+            kind = 'table'
         elif any((r & region).get_area() >= r.get_area()*.7 for region in figures):
             kind = 'figure'
         elif formula_line(line):
@@ -235,7 +225,7 @@ def page_policy(page):
         if kinds[key] == 'text' and not inline and (equation_number or short_fragment and any(same_column(r,eq) and near(r,eq,8,5) for eq in equations)):
             kinds[key] = 'formula'; equations.append(r)
     equations = union_regions(equations,35,8,gutter)
-    return lines, kinds, [{'kind':'figure','bbox':list(r)} for r in figures] + [{'kind':'formula','bbox':list(r)} for r in equations]
+    return lines, kinds, [{'kind':'figure','bbox':list(r)} for r in figures] + [{'kind':'formula','bbox':list(r)} for r in equations] + table_regions
 
 
 def build_policy(pdf, stored, fresh):
@@ -258,12 +248,12 @@ def build_policy(pdf, stored, fresh):
                 compact = re.sub(r'[\s-]+','',p['text'])
                 matched = [line for line in lines if (not box or box.intersects(fitz.Rect(line['bbox'])))
                            and re.sub(r'[\s-]+','',line_key(line)[1]) in compact]
-            skip_kinds = {'formula','figure','header','footer'}
+            skip_kinds = {'formula','figure','table','header','footer'}
             if matched and all(kinds.get(line_key(line)) == 'page-marker' for line in matched):
                 skip_kinds.add('page-marker')
             skipped = [(line,kinds.get(line_key(line),'text')) for line in matched if kinds.get(line_key(line),'text') in skip_kinds]
             translatable = not matched or len(skipped) < len(matched)
-            kind = 'text' if translatable else next((kind for kind in ('header','footer','figure','formula') if any(k==kind for _,k in skipped)),'page-marker')
+            kind = 'text' if translatable else next((kind for kind in ('header','footer','table','figure','formula') if any(k==kind for _,k in skipped)),'page-marker')
             source = p['text']
             if translatable and skipped:
                 # Keep IDs and original extraction intact; remove only recognized
