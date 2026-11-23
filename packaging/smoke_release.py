@@ -73,14 +73,18 @@ def main(executable, browser_check=False):
             assert get('/api/documents').json() == []
             storage = get('/api/library/storage').json()
             assert Path(storage['path']).resolve() == (home / 'data').resolve(), storage
-            for asset in ('/static/app.js', '/static/library.js', '/static/chat-markdown.js',
+            for asset in ('/static/app.js', '/static/startup.js', '/static/startup.css', '/static/library.js', '/static/chat-markdown.js',
                           '/static/translated-view.js', '/static/reading-position.js', '/static/references.js',
                           '/static/reading-locales.js', '/static/reading.css', '/static/reasoning-models.json',
                           '/static/app-icon.png', '/vendor/pdfjs-dist/build/pdf.mjs',
                           '/vendor/pdfjs-dist/build/pdf.worker.mjs', '/vendor/pdfjs-dist/web/pdf_viewer.css',
+                          '/vendor/pdfjs-dist/legacy/build/pdf.mjs', '/vendor/pdfjs-dist/legacy/build/pdf.worker.mjs',
                           '/vendor/marked/lib/marked.esm.js', '/vendor/dompurify/dist/purify.es.mjs',
                           '/vendor/katex/dist/katex.mjs', '/vendor/katex/dist/fonts/KaTeX_Main-Regular.woff2'):
-                assert len(get(asset).content) > 50
+                response = get(asset)
+                assert len(response.content) > 50
+                if asset.endswith(('.js', '.mjs')):
+                    assert response.headers['Content-Type'].startswith('text/javascript'), asset
             for asset_dir in ('cmaps', 'standard_fonts', 'wasm'):
                 candidates = (executable.parent / '_internal' / 'node_modules' / 'pdfjs-dist' / asset_dir).glob('*')
                 first = next(p for p in candidates if p.is_file())
@@ -171,8 +175,17 @@ def main(executable, browser_check=False):
                     expect(page.locator('.version-tag')).to_have_text('V'+'.'.join(VERSION.split('.')[:2]))
                     assert not errors, errors
                     page.screenshot(path=str(ROOT / 'tmp' / 'release-browser-check.png'))
+                    assert 'Frontend ready:' in (home / 'logs/desktop.log').read_text(encoding='utf-8')
+                    failed = browser.new_page(viewport={'width': 390, 'height': 844})
+                    failed.route('**/static/selection.js', lambda route: route.abort())
+                    with failed.expect_response(lambda response: '/api/frontend-diagnostics' in response.url) as diagnostic:
+                        failed.goto(url)
+                    assert diagnostic.value.status == 204
+                    expect(failed.locator('#startup-details')).to_contain_text('module_load')
+                    failed.screenshot(path=str(ROOT / 'tmp' / 'frontend-startup-error.png'))
+                    assert 'Frontend module_load:' in (home / 'logs/desktop.log').read_text(encoding='utf-8')
                     browser.close()
-                    print('PASS: packaged browser PDF text layer, bilingual layout and paragraph folding')
+                    print('PASS: packaged browser PDF text layer, bilingual layout, paragraph folding and frontend diagnostics')
             print('PASS: isolated EXE startup, resources, duplicate launch, PDF/layout/render, annotation/export, migration and restart')
         finally:
             if process and process.poll() is None:

@@ -15,9 +15,10 @@ def mixed_pdf():
 
 
 def open_visuals(page,base):
-    page.goto(base)
+    page.goto(base);expect(page.locator('#startup-status')).to_be_hidden()
     page.evaluate("localStorage.setItem('paperdesk.display','text')")
     page.reload()
+    expect(page.locator('#startup-status')).to_be_hidden()
     page.locator('#file-input').set_input_files({'name':'visuals.pdf','mimeType':'application/pdf','buffer':mixed_pdf()})
     expect(page.locator('#loading')).to_be_hidden(timeout=30000)
     page.locator('#pages .textLayer span').first.wait_for()
@@ -107,7 +108,7 @@ def test_small_and_tall_figures_keep_source_scale_and_fit_viewport(browser,servi
             p=pdf.new_page(width=600,height=800)
             p.insert_image(rect,stream=bitmap.tobytes('png'),keep_proportion=False)
         raw=pdf.tobytes()
-    page=browser.new_page(viewport={'width':1440,'height':1000});page.goto(base)
+    page=browser.new_page(viewport={'width':1440,'height':1000});page.goto(base);expect(page.locator('#startup-status')).to_be_hidden()
     page.locator('#file-input').set_input_files({'name':'small-and-tall.pdf','mimeType':'application/pdf','buffer':raw})
     expect(page.locator('#page-total')).to_have_text('2',timeout=30000)
     expect(page.locator('#loading')).to_be_hidden()

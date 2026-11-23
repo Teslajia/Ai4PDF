@@ -1,0 +1,7 @@
+#startup-status {position:fixed;inset:0;z-index:10000;display:grid;place-items:center;background:rgba(247,249,245,.94);padding:24px;overflow:auto}
+#startup-status[hidden] {display:none}
+.startup-card {width:min(560px,100%);box-sizing:border-box;background:#fff;border:1px solid #dce5d8;border-radius:18px;padding:28px;box-shadow:0 12px 48px #264e3b14;color:#34483e;font:15px/1.7 system-ui,sans-serif}
+.startup-card h2 {margin:0 0 12px;font-size:22px}
+.startup-card p {margin:0 0 16px}
+.startup-card pre {white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f7f2;padding:12px;border-radius:8px;font:12px/1.7 monospace}
+.startup-actions {display:flex;flex-wrap:wrap;gap:12px}

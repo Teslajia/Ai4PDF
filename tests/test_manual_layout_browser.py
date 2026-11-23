@@ -7,7 +7,7 @@ import app as server
 
 
 def open_paper(page,base,model,original=None):
-    page.goto(base);page.locator('#file-input').set_input_files({'name':'manual-layout.pdf','mimeType':'application/pdf','buffer':original or illustrated_pdf()})
+    page.goto(base);expect(page.locator('#startup-status')).to_be_hidden();page.locator('#file-input').set_input_files({'name':'manual-layout.pdf','mimeType':'application/pdf','buffer':original or illustrated_pdf()})
     expect(page.locator('#page-total')).to_have_text('1',timeout=20000)
     expect(page.locator('#loading')).to_be_hidden()
     page.locator('#translation-tab').click()

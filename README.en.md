@@ -40,7 +40,15 @@ Interface and translation targets support **Simplified Chinese, Traditional Chin
 
 Original regions have an overlaid PDF text layer for selection and copying. The bilingual view preserves original PDF content and inserts web text translations; it does not create a newly typeset bilingual PDF.
 
-## What's new in v1.1.0
+## What's new in v1.1.1
+
+- **Two-column segmentation fix:** long labels inside wide figures no longer shift the body-column divider or merge separate columns into one large block. Figures stay intact and translations follow individual paragraphs.
+- **More reliable startup:** fixes Windows script MIME settings that could leave the page visible but its buttons unresponsive. Uses the compatible PDF.js build and removes a dependency on newer browser syntax.
+- **Startup diagnostics:** unsupported browsers and initialization failures show an explanation and copyable diagnostics. Local logs contain only error categories, browser versions and missing features, never API keys or document content.
+
+Upgrade through Settings → Software update, or quit the old app and install in place. Reopening documents refreshes layout caches while preserving the library, translations, annotations and manual segmentation. To apply automatic layout to a manually edited page, restore automatic segmentation in its layout editor and save. Keep the same browser and address to retain saved browser settings. See the [v1.1.1 release](https://github.com/Teslajia/Ai4PDF/releases/tag/v1.1.1).
+
+## v1.1 features
 
 - **Translation with figures and tables:** choose “Translation only” beside the bilingual tab to read translations alongside detected original figures, tables and display equations. Captions use the saved translations. Where a PDF text layer exists, select, copy and annotate text inside figures and tables, or open a larger preview.
 - **Improved recognition:** use captions, panels, axes and labels to identify complete figures; keep table captions associated with tables and ignore vector paths hidden by PDF clipping. Small images retain a sensible size, and tall images fit the viewport proportionally.
@@ -56,7 +64,7 @@ Views share saved translations and annotations; switching does not trigger extra
 ### Windows 10 / 11, x64
 
 1. Open the [latest Release](https://github.com/Teslajia/Ai4PDF/releases/latest).
-2. Download and run `Ai4PDF-1.1.0-windows-x64-setup.exe`.
+2. Download and run `Ai4PDF-1.1.1-windows-x64-setup.exe`.
 3. Choose application and library folders. Select an empty folder or an existing Ai4PDF library.
 4. Start Ai4PDF. Your browser opens `http://127.0.0.1:8765/`.
 
@@ -66,7 +74,7 @@ Closing the browser leaves the local service running; use **Quit** in the tray m
 
 **Updates:** Starting with v1.0.1, use **Settings → Software updates → Check for updates**. The installed edition can download a stable GitHub Release, verify its SHA-256 hash, and **Install update and restart**. It keeps the installation folder, library, annotations, translations, saved settings and local port. Active saving, translation, chat or migration blocks installation. API keys not set to be remembered must be entered again after restarting. Source and portable editions link to the release page for manual updates.
 
-v1.0.0 users can upgrade directly to v1.1.0 without an intermediate version: quit the old app and run the new installer over the existing installation. No uninstall or document reimport is needed.
+v1.0.0 users can upgrade directly to v1.1.1 without an intermediate version: quit the old app and run the new installer over the existing installation. No uninstall or document reimport is needed.
 
 The installer is unsigned, so Windows may show an unknown-publisher warning. Download from this repository and verify files using `SHA256SUMS.txt`. Source archives and third-party notices accompany the binaries; ordinary users do not need to download them.
 

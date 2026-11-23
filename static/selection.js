@@ -1,4 +1,4 @@
-import { TextLayer } from '/vendor/pdfjs-dist/build/pdf.mjs';
+import { TextLayer } from '/vendor/pdfjs-dist/legacy/build/pdf.mjs';
 
 // Keep the original PDF appearance, but put its real, selectable text above it.
 // Each text run belongs to exactly one crop; cloning a whole page per crop would

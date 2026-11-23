@@ -1,4 +1,7 @@
-import policy from './reasoning-models.json' with {type:'json'};
+// JSON import attributes can prevent the entire app from parsing in older browsers.
+const response = await fetch(new URL('./reasoning-models.json', import.meta.url));
+if (!response.ok) throw new Error('Reasoning policy could not be loaded');
+const policy = await response.json();
 
 const catalogs=new Map();
 const key=config=>JSON.stringify([(config.baseUrl||'').trim().replace(/\/+$/,'').replace(/\/chat\/completions$/,''),(config.apiKey||'').trim()]);

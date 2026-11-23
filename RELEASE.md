@@ -2,7 +2,7 @@
 
 ## 给使用者
 
-- Windows 10 / 11，64 位（x64）。下载 `Ai4PDF-1.1.0-windows-x64-setup.exe`，双击安装，安装完成即可使用。
+- Windows 10 / 11，64 位（x64）。下载 `Ai4PDF-1.1.1-windows-x64-setup.exe`，双击安装，安装完成即可使用。
 - 无需安装 Python、Node.js 或单独下载前端依赖。默认浏览器中运行阅读界面，本地服务只监听 `127.0.0.1`。
 - 桌面及开始菜单提供 Ai4PDF 快捷方式。启动后自动打开界面，任务栏通知区域提供打开、日志、退出菜单。关闭网页不会停止服务；退出请使用托盘菜单。
 - 安装默认无需管理员权限。安装向导分别提供「程序安装位置」和「本地文档库位置」：文档库可直接输入路径或点击「浏览」，例如 `D:\Ai4PDF Library`，支持中文及带空格的文件夹。可选空文件夹或已有的 Ai4PDF 文档库；普通 PDF 文件夹不会自动导入。安装完成后的首次启动立即使用所选位置。
@@ -18,7 +18,7 @@
 
 下载安装包后校验 Release 的 SHA-256 信息；缺少校验值、文件不完整或校验失败时不会安装。点击「安装更新并重启」会等待旧进程退出，在相同安装目录升级，然后沿用原端口重新启动。文档库位置、PDF、批注、译文、对话及浏览器已保存设置保持不变。保存、翻译、问答或迁移未完成时不能开始安装。
 
-请继续使用原浏览器与访问地址；未勾选记住的 API Key 只在页面内存中，重启后需重新输入。源码版和便携版提供 Release 下载入口，按原方式手动更新。v1.0.0 没有更新入口，可退出旧程序后直接覆盖安装 v1.1.0，无需中间版本，无需卸载。
+请继续使用原浏览器与访问地址；未勾选记住的 API Key 只在页面内存中，重启后需重新输入。源码版和便携版提供 Release 下载入口，按原方式手动更新。v1.0.0 没有更新入口，可退出旧程序后直接覆盖安装 v1.1.1，无需中间版本，无需卸载。
 
 ## 现有源码版用户
 
@@ -40,7 +40,7 @@ powershell -ExecutionPolicy Bypass -File packaging/build.ps1
 
 可用 `-Python C:\Python313\python.exe` 指定解释器，`-InnoCompiler C:\tools\ISCC.exe` 指定现有 Inno Setup 7。已装好构建依赖时可用 `-SkipDependencies`。
 
-无人值守首次安装可使用 `Ai4PDF-1.1.0-windows-x64-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /LIBRARYDIR="D:\Ai4PDF Library"`。无效路径或试图切换已有资料的库会返回非零退出码；原配置保持不变。安装器使用 Windows 自带的 PowerShell 校验目录及原子保存 UTF-8 配置，不需要另装 Python。
+无人值守首次安装可使用 `Ai4PDF-1.1.1-windows-x64-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /LIBRARYDIR="D:\Ai4PDF Library"`。无效路径或试图切换已有资料的库会返回非零退出码；原配置保持不变。安装器使用 Windows 自带的 PowerShell 校验目录及原子保存 UTF-8 配置，不需要另装 Python。
 
 产物在 `release/`：安装 EXE、便携 ZIP、Ai4PDF 源码 ZIP、对应版本的 PyMuPDF/MuPDF 源码包、第三方声明、SHA256 清单。源码归档按白名单生成，排除文档库、迁移位置文件、虚拟环境、缓存和日志。`dist/Ai4PDF/` 是未压缩运行目录。
 
@@ -48,7 +48,7 @@ powershell -ExecutionPolicy Bypass -File packaging/build.ps1
 
 ## 上传 GitHub
 
-将项目根目录的源码上传为仓库根目录，不要上传 `data/`、`library-location.json`、`.venv/`、`.build-venv/`、`node_modules/`、`tmp/`、`dist/` 或 `release/`。已有 `.gitignore` 排除这些项目；本次同时生成的 `Ai4PDF-1.1.0-source.zip` 是可直接解压用于建仓库的干净源码。
+将项目根目录的源码上传为仓库根目录，不要上传 `data/`、`library-location.json`、`.venv/`、`.build-venv/`、`node_modules/`、`tmp/`、`dist/` 或 `release/`。已有 `.gitignore` 排除这些项目；本次同时生成的 `Ai4PDF-1.1.1-source.zip` 是可直接解压用于建仓库的干净源码。
 
 仓库使用 AGPL-3.0，保留 LICENSE、NOTICE 及第三方许可证。创建 Release 时应同时上传安装包、便携包、Ai4PDF 源码和匹配的 PyMuPDF/MuPDF 源码，不要只发布 EXE。
 
@@ -59,12 +59,22 @@ powershell -ExecutionPolicy Bypass -File packaging/build.ps1
 从同一 Release 下载 `SHA256SUMS.txt`，用 PowerShell 计算文件的 SHA256，并逐字符与清单对应行比较：
 
 ```powershell
-Get-FileHash .\Ai4PDF-1.1.0-windows-x64-setup.exe -Algorithm SHA256
+Get-FileHash .\Ai4PDF-1.1.1-windows-x64-setup.exe -Algorithm SHA256
 ```
+
+## v1.1.1 修复版本
+
+从 [v1.1.1 Release](https://github.com/Teslajia/Ai4PDF/releases/tag/v1.1.1) 下载安装包，或使用软件内的检查更新。退出旧版后覆盖安装，沿用已有文档库。重新打开文档时自动重建分栏显示缓存，不需要重新导入、清空译文或重做批注；手动切分的页面保持原设置。
+
+修复大图中的长说明文字干扰正文分栏、导致双栏正文被合成整块的问题，同时包含前端脚本加载与启动诊断改进。
 
 ## 启动诊断
 
 日志位于 `%LOCALAPPDATA%\Ai4PDF\logs\desktop.log`，最多保留三个约 1 MB 文件。日志不记录 API Key、PDF 内容或聊天内容。
+
+网页能打开但按钮没有反应时，先用最新版 Edge 或 Chrome 打开 `http://127.0.0.1:8765/`，按 `Ctrl + F5` 强制刷新。记录浏览器版本，并在 F12 → Console 中查看刷新后的第一条红色报错；不要清除浏览器存储，以免丢失保存在浏览器中的连接设置。
+
+v1.1.1 增加前端启动提示和可复制诊断。日志中的 `Frontend ready` 表示页面脚本完成初始化；`module_load` 表示模块加载或初始化失败，`unsupported_browser` 表示缺少必要浏览器功能，`runtime_error` 表示捕获到未处理的脚本错误。即使本地服务已启动，前端仍可能失败。诊断仅记录固定类别、浏览器版本及缺失功能，不记录完整异常消息、调用栈、网址参数或文档内容。
 
 端口被其他程序占用时，启动器会提示先退出旧程序；不会结束其他进程或自动换端口导致浏览器设置丢失。重复启动会打开已有窗口，不创建第二个本地服务。服务由 Waitress 托管，安装版不使用 Flask 开发服务器。
 

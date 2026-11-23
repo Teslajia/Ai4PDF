@@ -8,7 +8,7 @@ import pymupdf as fitz
 from pdf_geometry import visible_drawings, infer_gutter
 from translation_visuals import build_visuals
 
-VERSION = 9
+VERSION = 10
 
 
 def merged_intervals(intervals):
@@ -95,8 +95,13 @@ def build_layout(pdf, stored, fresh, protected_pages=()):
         obstacles += [fitz.Rect(p['bbox']) for p in paragraphs if p['bbox'] and not (
             fitz.Rect(p['bbox']).height > bounds.height*.3 and fitz.Rect(p['bbox']).width < 30)]
 
-        # Require substantial body-text evidence on both sides before splitting columns.
-        body = [p for p in paragraphs if p['bbox'] and len(p['text']) >= 70]
+        # Long labels inside a full-width figure are not column evidence. Their
+        # irregular x positions can move the median gutter into the right body
+        # column, turning every overlapping paragraph into a spanning obstacle.
+        # Classification is already available here; keep all labels in the
+        # original pixels but use only translatable prose to locate the gutter.
+        body = [p for p in paragraphs if p['bbox'] and len(p['text']) >= 70
+                and p.get('translatable', True) and p.get('translationKind', 'text') == 'text']
         gutter = infer_gutter([p['bbox'] for p in body],bounds.width) if page.rotation in (0,180) else None
 
         zones = []

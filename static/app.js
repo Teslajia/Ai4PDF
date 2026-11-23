@@ -1,4 +1,4 @@
-import * as pdfjs from '/vendor/pdfjs-dist/build/pdf.mjs';
+import * as pdfjs from '/vendor/pdfjs-dist/legacy/build/pdf.mjs';
 import { renderChatMarkdown } from './chat-markdown.js';
 import renderMathInElement from '/vendor/katex/dist/contrib/auto-render.mjs';
 import { sourceTextPage, mountSourceText, scaleSourceCrop, selectedTextAnchor, paintTextAnnotations, sourceSelection } from './selection.js';
@@ -15,7 +15,7 @@ import { draggableDialog } from './draggable-dialog.js';
 import { AnnotationActions } from './annotation-actions.js';
 import { t, getLocale, setLocale, startI18n } from './i18n.js';
 
-pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdfjs-dist/build/pdf.worker.mjs';
+pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdfjs-dist/legacy/build/pdf.worker.mjs';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const icon = name => `<svg><use href="#i-${name}"/></svg>`;
@@ -893,5 +893,7 @@ $('#system-language').onchange=()=>{
 };
 try{const target=localStorage.getItem('paperdesk.translationLanguage');if([...$('#target-language').options].some(option=>option.value===target))$('#target-language').value=target;}catch{}
 startI18n();
-$('#translation-display').value=localStorage.getItem('paperdesk.display')==='text'?'text':'layout';
-const last=localStorage.getItem('paperdesk.last');if(last)openById(last);
+try{
+  $('#translation-display').value=localStorage.getItem('paperdesk.display')==='text'?'text':'layout';
+  const last=localStorage.getItem('paperdesk.last');if(last)openById(last);
+}catch{ /* Reading and import remain available when browser storage is blocked. */ }

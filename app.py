@@ -70,7 +70,42 @@ def headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'"
     if request.path.startswith('/api/'):
         response.headers['Cache-Control'] = 'private, max-age=86400' if response.mimetype == 'image/png' else 'no-store'
+    elif request.endpoint in ('static', 'vendor', 'index') and response.status_code in (200, 206, 304):
+        # Windows registry associations can label .js/.mjs as text/plain.
+        # ES modules are strictly MIME checked, leaving every button inert.
+        types = {'.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
+                 '.json': 'application/json', '.wasm': 'application/wasm', '.html': 'text/html'}
+        kind = types.get(Path(request.path).suffix.lower())
+        if kind:
+            response.mimetype = kind
+        response.headers['Cache-Control'] = 'no-cache, max-age=0, must-revalidate'
     return response
+
+
+@app.post('/api/frontend-diagnostics')
+def frontend_diagnostics():
+    # Fixed codes only: never persist browser exception messages, storage,
+    # URLs, document contents, model responses or credentials.
+    if (request.content_length or 0) > 4096:
+        return fail('Diagnostic report is too large', 413)
+    value = request.get_json(silent=True)
+    codes = {'ready', 'unsupported_browser', 'module_load', 'runtime_error', 'load_timeout'}
+    if not isinstance(value, dict) or not isinstance(value.get('code'), str) or value['code'] not in codes:
+        return fail('Invalid diagnostic report')
+    known_features = {'modules', 'fetch', 'Promise', 'Promise.withResolvers', 'Worker', 'ResizeObserver', 'dialog', 'popover', 'DOMMatrix'}
+    missing = value.get('missing', [])
+    missing = sorted({item for item in missing if isinstance(item, str) and item in known_features}) if isinstance(missing, list) else []
+    browser = re.search(r'(Edg|Firefox|Chrome|Version)/(\d{1,3}(?:\.\d{1,6}){0,3})\b', request.headers.get('User-Agent', ''))
+    # Prefer Edge over its Chromium compatibility token.
+    edge = re.search(r'Edg/(\d{1,3}(?:\.\d{1,6}){0,3})\b', request.headers.get('User-Agent', ''))
+    label = 'Edge/' + edge[1] if edge else browser[0] if browser else 'Other'
+    error_type = value.get('errorType', '')
+    if error_type not in ('Error', 'TypeError', 'SyntaxError', 'ReferenceError', 'SecurityError', 'NetworkError', 'AbortError'):
+        error_type = 'Unknown'
+    log = app.logger.info if value['code'] == 'ready' else app.logger.warning
+    log('Frontend %s: app=%s browser=%s error=%s missing=%s', value['code'], VERSION,
+        label, error_type, ','.join(missing) or 'none')
+    return '', 204
 
 
 @app.errorhandler(Exception)
